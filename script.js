@@ -5,6 +5,7 @@
 // Get references to page elements
 const button = document.getElementById("makeSmoothie");
 const outputDiv = document.getElementById("output");
+button.addEventListener("click", makeSmoothieAsync);
 
 // Helper function to display messages on the page
 function showMessage(message) {
@@ -30,7 +31,10 @@ function getIngredients() {
   // 3. Resolve with "Ingredients ready"
 
   return new Promise((resolve, reject) => {
-    // Your code here
+    showMessage("Gathering ingredients...")
+      wait(2000).then(() => {
+        resolve("Ingredients ready");
+      });
   });
 }
 
@@ -43,7 +47,17 @@ function blendSmoothie() {
   // 4. Otherwise resolve with "Smoothie blended"
 
   return new Promise((resolve, reject) => {
-    // Your code here
+    showMessage("Blending smoothie...")
+    const success = Math.random() >= 0.3;
+    if (success) {
+      wait(3000).then(() => {
+        resolve("Smoothie blended");
+      });
+    } else {
+      wait(3000).then(() => {
+        reject("Error: Blender Broke!");
+      });
+    }
   });
 }
 
@@ -55,7 +69,10 @@ function pourSmoothie() {
   // 3. Resolve with "Smoothie is ready!"
 
   return new Promise((resolve, reject) => {
-    // Your code here
+    showMessage("Pouring into cup...")
+      wait(1000).then(() => {
+       resolve("Smoothie is ready!");
+      }); 
   });
 }
 
@@ -67,11 +84,19 @@ function makeSmoothieWithPromises() {
   outputDiv.innerHTML = ""; // Clear previous messages
 
   // TODO: Chain the steps in order using .then()
-  // getIngredients()
-  //   .then(...)
-  //   .then(...)
-  //   .then(...)
-  //   .catch(...)
+   getIngredients()
+     .then(result => {
+        showMessage(result);
+        return blendSmoothie();
+      })
+     .then(result => {
+        showMessage(result);
+        return pourSmoothie();
+      })
+     .then(result => {
+        showMessage(result);
+      })
+     .catch(error => showMessage(error));
 }
 
 /* =========================
@@ -88,4 +113,14 @@ async function makeSmoothieAsync() {
   // await pourSmoothie()
   // Show final success message
   // Catch and display any errors
+  try {
+    const text1 = await getIngredients();
+    showMessage(text1);
+    const text2 = await blendSmoothie();
+    showMessage(text2);
+    const text3 = await pourSmoothie();
+    showMessage(text3);
+  } catch (e) {
+    showMessage(e);
+  }
 }
